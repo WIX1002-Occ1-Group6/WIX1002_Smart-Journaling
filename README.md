@@ -247,7 +247,7 @@
 对于 GET 天气数据，你将使用代码中给出的相同 API URL (getURL)，并使用 `api.get()` 方法获取响应字符串，如“示例天气 API 响应（已格式化）”中所示。然后，使用你的值提取知识来提取所需的值。
 对于 POST 获取情绪预测，你也将使用代码中给出的相同 API URL (postURL)，确保你的 `.env` 文件中有访问令牌，并使用用户的日记输入句子（例如 `"Today I learned how to create a simple terminal journal app!"`）初始化 `journalInput` 变量。这个句子被用在 `jsonBody` 变量中，它将被“POST”到模型 API 作为模型输入，模型 API 将通过 `api.post()` 方法返回预测分数，如“示例模型 API 响应（已格式化）”中所示。然后，使用你的值提取相关知识，来提取所需的值。
 
-**注意：**如果你想试验不同的模型，而不是提供的模型（`distilbert/distilbert-base-uncased-finetuned-sst-2-english`），你可以按如下方式将其更改为你偏好的模型：
+**注意：** 如果你想试验不同的模型，而不是提供的模型（`distilbert/distilbert-base-uncased-finetuned-sst-2-english`），你可以按如下方式将其更改为你偏好的模型：
 要使用 `tabularisai/multilingual-sentiment-analysis` 模型，API URL 将是https://router.huggingface.co/hf-inference/models/tabularisai/multilingual-sentiment-analysis
 
 但是，请检查该模型是否支持这种 API 调用方式（使用 URL）：
