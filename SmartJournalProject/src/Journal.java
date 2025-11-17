@@ -1,5 +1,5 @@
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,7 +16,7 @@ public class Journal {
     public static final ZonedDateTime now = ZonedDateTime.now(timezone);
     public static final LocalDate today = now.toLocalDate();
 
-    private API api = new API();
+    private final API api = new API();
 
     private String date = "";
     private int lineNumber;
@@ -24,10 +24,9 @@ public class Journal {
     private boolean isTodayNoJournal = false;
 
     int datePage(String email) {
-        try {
-            PrintWriter outputStream = new PrintWriter(new FileOutputStream(email + "_journal.txt",true));
-            Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"));
+        try (Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"))) {
             System.out.println("\n=== Journal Dates ===");
+            System.out.println("0. Return to Main Menu");
             lineNumber = 0;
             while (inputStream.hasNextLine()) {
                 lineNumber++;
@@ -38,28 +37,28 @@ public class Journal {
                     date = currentLine;
                     if (date.equals(today.toString())) {
                         System.out.println(" (Today)");
-                    } else System.out.println("");
+                    } else System.out.println();
                 }
             }
             if (!date.equals(today.toString())) {
                 System.out.println(countJournal + ". (No journal for today, create one!)");
                 isTodayNoJournal = true;
             } else countJournal--;
-            outputStream.close();
-            inputStream.close();
         } 
         catch (IOException e) {
-            System.out.println("Problem with file output"); 
+            System.out.println("Problem with file!!"); 
         }
         return countJournal;
     }
 
     void journalPage(int journalDateNum, String email) {
         int dateLine = journalDateNum * 4 - 3;
-        try {
+        try (
             Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"));
+            PrintWriter outputStream = new PrintWriter(new FileOutputStream(email + "_journal.txt",true));
+            ) {
             int lineNumber = 0;
-            String content, date = "";
+            String date = null;
             while (inputStream.hasNextLine()) {
                 lineNumber++;
                 String currentLine = inputStream.nextLine();
@@ -69,21 +68,18 @@ public class Journal {
                 }
             }
             if (isTodayNoJournal && journalDateNum == countJournal) {
-                PrintWriter outputStream = new PrintWriter(new FileOutputStream(email + "_journal.txt",true));
                 System.out.println("\nEnter your journal entry for " + today + ": ");
                 System.out.print("> ");
                 String entryText = input.nextLine();
-                
+
                 outputStream.println(today);
                 outputStream.println("Weather: ");
                 outputStream.println("Mood: ");
                 outputStream.println(entryText);
                 System.out.println("Journal saved successfully!");
                 isTodayNoJournal = false;
-                outputStream.close();
-                inputStream.close();
                 journalPage(journalDateNum, email);
-            } else {
+            } else if (journalDateNum == countJournal) {
                 System.out.println("\n=== Journal Entry for " + date + " ===");
                 System.out.println("Would you like to:");
                 System.out.println("1. View Journal");
@@ -93,20 +89,65 @@ public class Journal {
                 String journalEditChoice = input.nextLine();
                 switch (journalEditChoice) {
                     case "1":
-                        
+                        System.out.println("\n=== Journal Entry for " + date + " ===");
+                        String tempLine = null;
+                        for (int i = 0; i < 3; i++) {
+                            tempLine = inputStream.nextLine();
+                        }
+                        System.out.println(tempLine);
+                        System.out.print("\nPress Enter to go back.\n> ");
+                        input.nextLine();
                         break;
-                    default:
-                        throw new AssertionError();
+                    case "2":
+                        System.out.println("\nEdit your journal entry for " + date + ":");
+                        System.out.print("> ");
+                        editJournal(email);
+                        break;
                 }
+            } else {
+                System.out.println("\n=== Journal Entry for " + date + " ===");
+                String tempLine = null;
+                for (int i = 0; i < 3; i++) {
+                    tempLine = inputStream.nextLine();
+                }
+                System.out.println(tempLine);
+                System.out.print("\nPress Enter to go back.\n> ");
+                input.nextLine();
             }
-
-
-            
-            inputStream.close();
         } 
-        catch (FileNotFoundException e) {
-            System.out.println("File was not found"); 
+        catch (Exception e) {
+            System.out.println("Problem with file!!"); 
         } 
     }
 
+    void editJournal(String email) {
+        // Read & write n-1 line to temp file, then add 1 new line in temp, then rewrite temp file into original file 
+        File originalFile = new File(email + "_journal.txt");
+        File tempFile = new File("temp.txt");
+        try (
+            Scanner inputStream = new Scanner(new FileInputStream(originalFile));
+            PrintWriter outputStream = new PrintWriter(new FileOutputStream(tempFile));
+            ) {
+            String lineBuffer = inputStream.nextLine();
+            while (inputStream.hasNextLine()) { 
+                String line = inputStream.nextLine();
+                outputStream.println(lineBuffer);
+                lineBuffer = line;
+            }
+            outputStream.print(input.nextLine());
+        } catch (Exception e) {
+            System.out.println("Problem with file!!");
+        }
+        try (
+            Scanner inputStream = new Scanner(new FileInputStream(tempFile));
+            PrintWriter outputStream = new PrintWriter(new FileOutputStream(originalFile));
+            ) {
+            while (inputStream.hasNextLine()) { 
+                outputStream.println(inputStream.nextLine());
+            }
+            System.out.println("Journal saved successfully!");
+            } catch (Exception e) {
+            System.out.println("Problem with file!!");
+        }
+    }
 }

@@ -10,13 +10,12 @@ public class User {
     private String email, password, displayName;
     public static Scanner input = new Scanner(System.in);
 
-
-
     boolean register() {
         
-        try {
+        try (
             PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData.txt",true));
             Scanner inputStream = new Scanner(new FileInputStream("UserData.txt"));
+            ) {
             System.out.print("Enter email: ");
             email = input.nextLine();
 
@@ -24,12 +23,11 @@ public class User {
                 System.out.println("Invaild input.");
                 return false;
             }
-            // 检查是否冲突
+            // Check if already registered
             while (inputStream.hasNextLine()) {
                 String currentLine = inputStream.nextLine();
                 if (currentLine.equals(email)) {
                     System.out.println("You have already registered. Please use log in.");
-                    outputStream.close();
                     return false;
                 }
             }
@@ -41,11 +39,9 @@ public class User {
             System.out.print("Enter password: ");
             String password = input.nextLine();
             outputStream.println(password);
-            inputStream.close();
-            outputStream.close();
         } 
         catch (IOException e) {
-            System.out.println("Problem with file output"); 
+            System.out.println("Problem with file!!"); 
             return false;
         }
         System.out.println("You have successfully registered!");
@@ -53,30 +49,27 @@ public class User {
     }
 
     boolean login() {
-        try {
-            Scanner inputStream = new Scanner(new FileInputStream("UserData.txt"));
+        try (Scanner inputStream = new Scanner(new FileInputStream("UserData.txt"))) {
             System.out.print("Enter email: ");
             email = input.nextLine();
             System.out.print("Enter password: ");
             String password = input.nextLine();
             int lineNumber = 0;
-            // 查找邮箱是否存在
+            // Check availablity
             while (inputStream.hasNextLine()) {
                 lineNumber++;
                 String currentLine = inputStream.nextLine();
                 if (lineNumber % 3 == 1) {
                     if (currentLine.equals(email)) {
-                        // 获取显示名称，并检查密码
+                        // Get displayName and check password
                         displayName = inputStream.nextLine();
                         if (password.equals(inputStream.nextLine())) {
-                            inputStream.close();
                             System.out.println("Login successful!");
                             return true;
                         }
                     }
                 }
             }
-            inputStream.close();
         }
         catch (FileNotFoundException e) {
             System.out.println("File was not found");
