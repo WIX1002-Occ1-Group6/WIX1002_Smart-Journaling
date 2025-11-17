@@ -10,9 +10,10 @@ public class SmartJournal {
     public static final User user = new User();
     public static final Journal journal = new Journal();
 
-    // 用户帐户和登录/注册页面
     public static void loginPage() {
-
+        for (int i = 0; i < 50; i++) {
+            System.out.println("\n");
+        }
         System.out.println("\n=== Welcome to Smart Journal ===");
         System.out.println("1. Login");
         System.out.println("2. Register");
@@ -37,13 +38,13 @@ public class SmartJournal {
         }
     }
 
-
-    // 登录成功后显示的欢迎页
     public static void welcomePage() {
-        // 按时间显示不同的问候语
+        // Different welcome displays based on time
         ZonedDateTime fivePM = ZonedDateTime.of(LocalDate.now(timezone), LocalTime.of(17, 0), timezone);
         ZonedDateTime twelveAM = ZonedDateTime.of(LocalDate.now(timezone), LocalTime.of(12, 0), timezone);
-        //System.out.println(now);
+        for (int i = 0; i < 50; i++) {
+            System.out.println("\n");
+        }
         if (now.isAfter(fivePM)) {
             System.out.println("\nGood Evening! " + user.getDisplayName());
         } else if (now.isAfter(twelveAM)) {
@@ -51,7 +52,7 @@ public class SmartJournal {
         } else {
             System.out.println("\nGood Morning! " + user.getDisplayName());
         }
-        // 主要功能菜单
+
         System.out.println("\n=== Main Menu ===");
         System.out.println("1. Create Journals");
         System.out.println("2. View Weekly Mood Summary");
@@ -64,8 +65,8 @@ public class SmartJournal {
                 welcomePage();
                 break;
             case "2":
-                //没做
-                System.out.println("还没做……");
+                // todo qwq
+                System.out.println("todo............................................................");
                 welcomePage();
                 break;
             case "3":
@@ -78,25 +79,20 @@ public class SmartJournal {
         }
     }
 
-    // 选择日记时间页面
     public static void journalDatePage() {
-
         int countJournal = journal.datePage(user.getEmail());
-        int journalDateNum = 0;
-        System.out.println("\nSelect a date to view journal, or create a new journal for today:");
-        System.out.print("> ");
-        do {
+        int journalDateNum = -1;
+        while (journalDateNum < 0 || journalDateNum > countJournal) {
+            System.out.println("\nSelect a date to view journal, or create a new journal for today:");
+            System.out.print("> ");
             journalDateNum = input.nextInt();
-        } while (journalDateNum < 1 || journalDateNum > countJournal);
+        }
+        if (journalDateNum > 0) {
+            journal.journalPage(journalDateNum,user.getEmail());
+            journalDatePage();
+        }
 
-        journal.journalPage(journalDateNum,user.getEmail());
-        
     }
-    
-    public static void journalEntryPage(String[] args) {
-        
-    }
-
 
     public static void main(String[] args) {
         loginPage();
