@@ -10,29 +10,29 @@ These objectives represent the minimum viable product (MVP) required to deliver 
 
 ### ✅User Authentication:
 
-- Implement a secure user registration and login system based on email and password.
+- ✅Implement a secure user registration and login system based on email and password.
 
-- Persist user account data (Email, Display Name, Password) in a local text file (UserData.txt).
+- ✅Persist user account data (Email, Display Name, Password) in a local text file (UserData.txt).
 
-### Core Journaling Interface (CLI):
+### ✅Core Journaling Interface (CLI):
 
-- Develop a Command-Line Interface (CLI) as the primary user interface.
+- ✅Develop a Command-Line Interface (CLI) as the primary user interface.
 
-- Implement functionality for users to Create, View, and Edit daily journal entries.
+- ✅Implement functionality for users to Create, View, and Edit daily journal entries.
 
-- Ensure the "Create" and "Edit" options are logically constrained to the current date ("Today").
+- ✅Ensure the "Create" and "Edit" options are logically constrained to the current date ("Today").
 
-- Allow users to view any past journal entry.
+- ✅Allow users to view any past journal entry.
 
-### Data Persistence:
+### ✅Data Persistence:
 
-- Implement file I/O operations to save, load, and update journal entries from user-specific files (e.g., s100201@student.fop_journal.txt).
+- ✅Implement file I/O operations to save, load, and update journal entries from user-specific files (e.g., s100201@student.fop_journal.txt).
 
-- Ensure all data (entries, mood, weather) is saved correctly so it persists after the application is closed.
+- ✅Ensure all data (entries, mood, weather) is saved correctly so it persists after the application is closed.
 
 ### ✅Dynamic UX Elements:
 
-- Create a time-sensitive welcome message (Good Morning, Good Afternoon, Good Evening) based on the user's current time (GMT+8).
+- ✅Create a time-sensitive welcome message (Good Morning, Good Afternoon, Good Evening) based on the user's current time (GMT+8).
 
 ### API Integration (Automated Enrichment):
 
