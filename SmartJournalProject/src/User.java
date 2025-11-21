@@ -35,9 +35,17 @@ public class User {
             outputStream.println(email);
             System.out.print("Enter display name: ");
             displayName = input.nextLine();
+            while (checkNoInput(displayName)) {
+                System.out.print("Enter display name: ");
+                displayName = input.nextLine();
+            }
             outputStream.println(displayName);
             System.out.print("Enter password: ");
             password = input.nextLine();
+            while (checkNoInput(password)) {
+                System.out.print("Enter password: ");
+                password = input.nextLine();
+            }
             outputStream.println(password);
         } 
         catch (IOException e) {
@@ -85,5 +93,13 @@ public class User {
     
     public String getEmail() {
         return email;
+    }
+
+    private boolean checkNoInput(String inputLine) {
+        if (inputLine.equals("")) {
+            System.out.println("Invaild input. Please try again.");
+            return true;
+        }
+        else return false;
     }
 }

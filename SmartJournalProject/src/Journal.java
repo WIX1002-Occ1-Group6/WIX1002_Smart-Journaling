@@ -16,29 +16,34 @@ public class Journal {
     private static final ZonedDateTime now = ZonedDateTime.now(timezone);
     private static final LocalDate today = now.toLocalDate();
 
+    private String date = "";
     private final API api = new API();
     private int countJournal = 1;
     private boolean isTodayNoJournal = false;
 
     public int datePage(String email) {
-        try (Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"))) {
+        try (
+            PrintWriter outputStream = new PrintWriter(new FileOutputStream(email + "_journal.txt",true));
+            Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"));
+            ) {
+            outputStream.close();
             System.out.println("\n=== Journal Dates ===");
             System.out.println("0. Return to Main Menu");
-            int lineNumber = 0;
-            String date = "";
-            while (inputStream.hasNextLine()) {
+            String dateFind = "";
+            // Find all the date line in file
+            for (int lineNumber = 0; inputStream.hasNextLine(); ) {
                 lineNumber++;
                 countJournal = lineNumber / 4 + 1;
                 String currentLine = inputStream.nextLine();
                 if (lineNumber % 4 == 1) {
                     System.out.print(countJournal + ". "+ currentLine);
-                    date = currentLine;
-                    if (date.equals(today.toString())) {
+                    dateFind = currentLine;
+                    if (dateFind.equals(today.toString())) {
                         System.out.println(" (Today)");
                     } else System.out.println();
                 }
             }
-            if (!date.equals(today.toString())) {
+            if (!dateFind.equals(today.toString())) {
                 System.out.println(countJournal + ". (No journal for today, create one!)");
                 isTodayNoJournal = true;
             } else countJournal--;
@@ -55,9 +60,7 @@ public class Journal {
             Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"));
             PrintWriter outputStream = new PrintWriter(new FileOutputStream(email + "_journal.txt",true));
             ) {
-            int lineNumber = 0;
-            String date = null;
-            while (inputStream.hasNextLine()) {
+            for (int lineNumber = 0; inputStream.hasNextLine(); ) {
                 lineNumber++;
                 String currentLine = inputStream.nextLine();
                 if (lineNumber == dateLine) {
@@ -69,6 +72,11 @@ public class Journal {
                 System.out.println("\nEnter your journal entry for " + today + ": ");
                 System.out.print("> ");
                 String entryText = input.nextLine();
+                while (checkNoInput(entryText)) {
+                    System.out.println("\nEnter your journal entry for " + today + ": ");
+                    System.out.print("> ");
+                    entryText = input.nextLine();
+                }
 
                 outputStream.println(today);
                 outputStream.println("Weather: ");
@@ -76,6 +84,8 @@ public class Journal {
                 outputStream.println(entryText);
                 System.out.println("Journal saved successfully!");
                 isTodayNoJournal = false;
+                inputStream.close();
+                outputStream.close();
                 journalPage(journalDateNum, email);
             } else if (journalDateNum == countJournal) {
                 System.out.println("\n=== Journal Entry for " + date + " ===");
@@ -100,6 +110,12 @@ public class Journal {
                         System.out.println("\nEdit your journal entry for " + date + ":");
                         System.out.print("> ");
                         editJournal(email);
+                        break;
+                    case "3":
+                        break;
+                    default:
+                        System.out.println("\nInvaild input.");
+                        journalPage(journalDateNum, email);
                         break;
                 }
             } else {
@@ -132,7 +148,13 @@ public class Journal {
                 outputStream.println(lineBuffer);
                 lineBuffer = line;
             }
-            outputStream.print(input.nextLine());
+            String editInput = input.nextLine();
+            while (checkNoInput(editInput)) {
+                System.out.println("\nEdit your journal entry for " + date + ":");
+                System.out.print("> ");
+                editInput = input.nextLine();
+            }
+            outputStream.print(editInput);
         } catch (Exception e) {
             System.out.println("Problem with file!!");
         }
@@ -147,5 +169,13 @@ public class Journal {
             } catch (Exception e) {
             System.out.println("Problem with file!!");
         }
+    }
+
+    private boolean checkNoInput(String inputLine) {
+        if (inputLine.equals("")) {
+            System.out.println("Invaild input. Please try again.");
+            return true;
+        }
+        else return false;
     }
 }
