@@ -3,14 +3,14 @@ import java.util.Scanner;
 
 public class SmartJournal {
 
-    public static final ZoneId timezone = ZoneId.of("Asia/Kuala_Lumpur");
-    public static final ZonedDateTime now = ZonedDateTime.now(timezone);
-    public static final Scanner input = new Scanner(System.in);
-    public static final LocalDate today = now.toLocalDate();
-    public static final User user = new User();
-    public static final Journal journal = new Journal();
+    private static final ZoneId timezone = ZoneId.of("Asia/Kuala_Lumpur");
+    private static final ZonedDateTime now = ZonedDateTime.now(timezone);
+    private static final Scanner input = new Scanner(System.in);
+    private static final LocalDate today = now.toLocalDate();
+    private static final User user = new User();
+    private static final Journal journal = new Journal();
 
-    public static void loginPage() {
+    private static void loginPage() {
         for (int i = 0; i < 50; i++) {
             System.out.println("\n");
         }
@@ -38,7 +38,7 @@ public class SmartJournal {
         }
     }
 
-    public static void welcomePage() {
+    private static void welcomePage() {
         // Different welcome displays based on time
         ZonedDateTime fivePM = ZonedDateTime.of(LocalDate.now(timezone), LocalTime.of(17, 0), timezone);
         ZonedDateTime twelveAM = ZonedDateTime.of(LocalDate.now(timezone), LocalTime.of(12, 0), timezone);
@@ -79,7 +79,7 @@ public class SmartJournal {
         }
     }
 
-    public static void journalDatePage() {
+    private static void journalDatePage() {
         int countJournal = journal.datePage(user.getEmail());
         int journalDateNum = -1;
         while (journalDateNum < 0 || journalDateNum > countJournal) {

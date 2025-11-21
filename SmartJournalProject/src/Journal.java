@@ -11,23 +11,21 @@ import java.util.Scanner;
 
 public class Journal {
 
-    public static Scanner input = new Scanner(System.in);
-    public static final ZoneId timezone = ZoneId.of("Asia/Kuala_Lumpur");
-    public static final ZonedDateTime now = ZonedDateTime.now(timezone);
-    public static final LocalDate today = now.toLocalDate();
+    private static final Scanner input = new Scanner(System.in);
+    private static final ZoneId timezone = ZoneId.of("Asia/Kuala_Lumpur");
+    private static final ZonedDateTime now = ZonedDateTime.now(timezone);
+    private static final LocalDate today = now.toLocalDate();
 
     private final API api = new API();
-
-    private String date = "";
-    private int lineNumber;
     private int countJournal = 1;
     private boolean isTodayNoJournal = false;
 
-    int datePage(String email) {
+    public int datePage(String email) {
         try (Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"))) {
             System.out.println("\n=== Journal Dates ===");
             System.out.println("0. Return to Main Menu");
-            lineNumber = 0;
+            int lineNumber = 0;
+            String date = "";
             while (inputStream.hasNextLine()) {
                 lineNumber++;
                 countJournal = lineNumber / 4 + 1;
@@ -51,7 +49,7 @@ public class Journal {
         return countJournal;
     }
 
-    void journalPage(int journalDateNum, String email) {
+    public void journalPage(int journalDateNum, String email) {
         int dateLine = journalDateNum * 4 - 3;
         try (
             Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"));
@@ -120,7 +118,7 @@ public class Journal {
         } 
     }
 
-    void editJournal(String email) {
+    public void editJournal(String email) {
         // Read & write n-1 line to temp file, then add 1 new line in temp, then rewrite temp file into original file 
         File originalFile = new File(email + "_journal.txt");
         File tempFile = new File("temp.txt");

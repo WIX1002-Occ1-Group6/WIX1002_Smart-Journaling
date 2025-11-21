@@ -8,9 +8,9 @@ import java.util.Scanner;
 public class User {
 
     private String email, password, displayName;
-    public static Scanner input = new Scanner(System.in);
+    private static final Scanner input = new Scanner(System.in);
 
-    boolean register() {
+    public boolean register() {
         
         try (
             PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData.txt",true));
@@ -37,7 +37,7 @@ public class User {
             displayName = input.nextLine();
             outputStream.println(displayName);
             System.out.print("Enter password: ");
-            String password = input.nextLine();
+            password = input.nextLine();
             outputStream.println(password);
         } 
         catch (IOException e) {
@@ -48,12 +48,12 @@ public class User {
         return true;
     }
 
-    boolean login() {
+    public boolean login() {
         try (Scanner inputStream = new Scanner(new FileInputStream("UserData.txt"))) {
             System.out.print("Enter email: ");
             email = input.nextLine();
             System.out.print("Enter password: ");
-            String password = input.nextLine();
+            password = input.nextLine();
             int lineNumber = 0;
             // Check availablity
             while (inputStream.hasNextLine()) {
@@ -79,11 +79,11 @@ public class User {
         return false;
     }
 
-    String getDisplayName() {
+    public String getDisplayName() {
         return displayName;
     }
     
-    String getEmail() {
+    public String getEmail() {
         return email;
     }
 }
