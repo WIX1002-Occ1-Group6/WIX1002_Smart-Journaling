@@ -9,12 +9,13 @@ public class User {
 
     private String email, password, displayName;
     private static final Scanner input = new Scanner(System.in);
+    private static final String DATAFILE = "UserData/UserData.txt";
 
     public boolean register() {
         
         try (
-            PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData.txt",true));
-            Scanner inputStream = new Scanner(new FileInputStream("UserData.txt"));
+            PrintWriter outputStream = new PrintWriter(new FileOutputStream(DATAFILE,true));
+            Scanner inputStream = new Scanner(new FileInputStream(DATAFILE));
             ) {
             System.out.print("Enter email: ");
             email = input.nextLine();
@@ -57,7 +58,7 @@ public class User {
     }
 
     public boolean login() {
-        try (Scanner inputStream = new Scanner(new FileInputStream("UserData.txt"))) {
+        try (Scanner inputStream = new Scanner(new FileInputStream(DATAFILE))) {
             System.out.print("Enter email: ");
             email = input.nextLine();
             System.out.print("Enter password: ");

@@ -6,7 +6,3 @@ test 20251101
 Weather: 
 Mood: 
 test 20251102
-2025-11-17
-Weather: 
-Mood: 
-jaja

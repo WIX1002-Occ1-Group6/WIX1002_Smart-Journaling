@@ -1,4 +1,4 @@
-> This is a `zh-cn` translation of document`WIX1002 Assignment Topic 3.pdf`.
+> This is a `zh-cn` translation of document `WIX1002 Assignment Topic 3.pdf`.
 
 # 智能日记 - Smart Journaling
 长期以来，写日记一直被认为是自我表达和个人反思的宝贵工具。它为个人提供了一个记录想法、情绪和经历的空间，帮助他们处理日常生活并反思个人成长。

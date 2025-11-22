@@ -23,8 +23,8 @@ public class Journal {
 
     public int datePage(String email) {
         try (
-            PrintWriter outputStream = new PrintWriter(new FileOutputStream(email + "_journal.txt",true));
-            Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"));
+            PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData/" + email + "_journal.txt",true));
+            Scanner inputStream = new Scanner(new FileInputStream("UserData/" + email + "_journal.txt"));
             ) {
             outputStream.close();
             System.out.println("\n=== Journal Dates ===");
@@ -57,8 +57,8 @@ public class Journal {
     public void journalPage(int journalDateNum, String email) {
         int dateLine = journalDateNum * 4 - 3;
         try (
-            Scanner inputStream = new Scanner(new FileInputStream(email + "_journal.txt"));
-            PrintWriter outputStream = new PrintWriter(new FileOutputStream(email + "_journal.txt",true));
+            Scanner inputStream = new Scanner(new FileInputStream("UserData/" + email + "_journal.txt"));
+            PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData/" + email + "_journal.txt",true));
             ) {
             for (int lineNumber = 0; inputStream.hasNextLine(); ) {
                 lineNumber++;
@@ -136,8 +136,8 @@ public class Journal {
 
     public void editJournal(String email) {
         // Read & write n-1 line to temp file, then add 1 new line in temp, then rewrite temp file into original file 
-        File originalFile = new File(email + "_journal.txt");
-        File tempFile = new File("temp.txt");
+        File originalFile = new File("UserData/" + email + "_journal.txt");
+        File tempFile = new File("UserData/temp.txt");
         try (
             Scanner inputStream = new Scanner(new FileInputStream(originalFile));
             PrintWriter outputStream = new PrintWriter(new FileOutputStream(tempFile));
