@@ -1,3 +1,5 @@
+package Journal;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -61,7 +63,10 @@ public class User {
     }
 
     public boolean login() {
-        try (Scanner inputStream = new Scanner(new FileInputStream(DATAFILE))) {
+        try (
+            PrintWriter outputStream = new PrintWriter(new FileOutputStream(DATAFILE,true));
+            Scanner inputStream = new Scanner(new FileInputStream(DATAFILE));
+        ) {
             System.out.print("Enter email: ");
             email = input.nextLine();
             System.out.print("Enter password: ");

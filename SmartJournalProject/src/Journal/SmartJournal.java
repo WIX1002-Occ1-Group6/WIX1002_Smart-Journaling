@@ -1,3 +1,6 @@
+package Journal;
+
+import java.io.File;
 import java.time.*;
 import java.util.Scanner;
 
@@ -98,6 +101,8 @@ public class SmartJournal {
     }
 
     public static void main(String[] args) {
+        File dataFolder = new File("UserData/");
+        if (!dataFolder.exists()) dataFolder.mkdir();
         clearScreen();
         loginPage();
     }
