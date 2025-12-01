@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.Scanner;
 
 
@@ -19,7 +20,6 @@ public class Journal {
     private static final LocalDate today = now.toLocalDate();
 
     private String date = "";
-    private final API api = new API();
     private int countJournal = 1;
     private boolean isTodayNoJournal = false;
 
@@ -79,10 +79,14 @@ public class Journal {
                     System.out.print("> ");
                     entryText = input.nextLine();
                 }
+                System.out.println("Processing...");
+                String json = getMood(entryText);
+                String mood = parser(json, "\"label\":");
+                String weather = parser(json, "\"summary_forecast\":");
 
                 outputStream.println(today);
-                outputStream.println("Weather: ");
-                outputStream.println("Mood: ");
+                outputStream.println(weather);
+                outputStream.println(mood);
                 outputStream.println(entryText);
                 clearScreen();
                 System.out.println("Journal saved successfully!");
@@ -185,6 +189,61 @@ public class Journal {
             return true;
         }
         else return false;
+    }
+
+    private static String getMood(String entryText) {
+        // copy from API.java
+        API api = new API();
+        Map<String, String> env = EnvLoader.loadEnv(".env");
+        String response = null;
+        try {
+            // --- Example GET request: Fetch latest weather forecast for Kuala Lumpur ---
+            String getUrl = "https://api.data.gov.my/weather/forecast/?contains=WP%20Kuala%20Lumpur@location__location_name&sort=date&limit=1";
+            String getResponse = api.get(getUrl);
+            // System.out.println("GET Response:\n" + getResponse);
+
+            // --- Example POST request: Perform sentiment analysis using HuggingFace model ---
+            String journalInput = entryText;
+            String postUrl = "https://router.huggingface.co/hf-inference/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english";
+
+            // Safely get bearer token
+            String bearerToken = env.get("BEARER_TOKEN");
+            if (bearerToken == null || bearerToken.isEmpty()) {
+                System.err.println("Error: BEARER_TOKEN is not set in the environment.");
+                return "Error";
+            }
+
+            // Format JSON body
+            String jsonBody = "{\"inputs\": \"" + journalInput + "\"}";
+
+            // Call POST
+            String postResponse = api.post(postUrl, bearerToken, jsonBody);
+            // System.out.println("\nSentiment Analysis Response:\n" + postResponse);
+            response = getResponse + postResponse;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    private static String parser(String jsonString, String keyToFind) {
+        //String keyToFind = "\"summary_forecast\":";
+        String summaryForecast = null;
+        int startIndex = jsonString.indexOf(keyToFind);
+
+        if (startIndex != -1) {
+            int valueStart = startIndex + keyToFind.length();
+            // Find value start with "
+            valueStart = jsonString.indexOf('\"', valueStart);
+            if (valueStart != -1) {
+                // End with same "
+                int valueEnd = jsonString.indexOf('\"', valueStart + 1);
+                if (valueEnd != -1) {
+                    summaryForecast = jsonString.substring(valueStart + 1, valueEnd);
+                }
+            }
+        }
+        return summaryForecast;
     }
 
     private static void clearScreen() {

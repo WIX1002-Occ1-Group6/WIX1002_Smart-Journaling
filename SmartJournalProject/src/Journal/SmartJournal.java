@@ -9,7 +9,6 @@ public class SmartJournal {
     private static final ZoneId timezone = ZoneId.of("Asia/Kuala_Lumpur");
     private static final ZonedDateTime now = ZonedDateTime.now(timezone);
     private static final Scanner input = new Scanner(System.in);
-    private static final LocalDate today = now.toLocalDate();
     private static final User user = new User();
     private static final Journal journal = new Journal();
 
