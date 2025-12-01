@@ -65,8 +65,7 @@ public class SmartJournal {
                 welcomePage();
                 break;
             case "2":
-                // todo qwq
-                System.out.println("todo............................................................");
+                journal.weeklySummary(user.getEmail());
                 welcomePage();
                 break;
             case "3":

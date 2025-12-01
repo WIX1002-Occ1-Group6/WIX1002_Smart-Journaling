@@ -105,11 +105,9 @@ public class Journal {
                 switch (journalEditChoice) {
                     case "1":
                         System.out.println("\n=== Journal Entry for " + date + " ===");
-                        String tempLine = null;
-                        for (int i = 0; i < 3; i++) {
-                            tempLine = inputStream.nextLine();
-                        }
-                        System.out.println(tempLine);
+                        System.out.println("Weather: " + inputStream.nextLine());
+                        System.out.println("Mood: " + inputStream.nextLine());
+                        System.out.println(inputStream.nextLine());
                         System.out.print("\nPress Enter to go back.\n> ");
                         input.nextLine();
                         clearScreen();
@@ -130,11 +128,9 @@ public class Journal {
                 }
             } else {
                 System.out.println("\n=== Journal Entry for " + date + " ===");
-                String tempLine = null;
-                for (int i = 0; i < 3; i++) {
-                    tempLine = inputStream.nextLine();
-                }
-                System.out.println(tempLine);
+                System.out.println("Weather: " + inputStream.nextLine());
+                System.out.println("Mood: " + inputStream.nextLine());
+                System.out.println(inputStream.nextLine());
                 System.out.print("\nPress Enter to go back.\n> ");
                 input.nextLine();
                 clearScreen();
@@ -182,6 +178,40 @@ public class Journal {
             System.out.println("Problem with file!!");
         }
     }
+
+    public void weeklySummary(String email) {
+        System.out.println("=== Weekly Mood Summary ===");
+        String format = "%-12s %-55s %-10s%n";
+        System.out.printf(format, "Date", "Weather", "Mood");
+        
+        int count = 0;
+        for (int i = 6; i >= 0; i--) {
+            LocalDate dateToCheck = today.minusDays(i);
+            String dateString = dateToCheck.toString();
+            try (
+                PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData/" + email + "_journal.txt",true));
+                Scanner inputStream = new Scanner(new FileInputStream("UserData/" + email + "_journal.txt"));
+                ) {
+                outputStream.close();
+                while (inputStream.hasNextLine()) {
+                    String currentLine = inputStream.nextLine();
+                    if(dateString.equals(currentLine)) {
+                        System.out.printf(format, currentLine, inputStream.nextLine(), inputStream.nextLine());
+                        count++;
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+            System.out.println("Problem with file!!"); 
+            }
+        }
+        System.out.println("\nIn last 7 days, you wrote " + count + " journal entry.");
+        System.out.print("\nPress Enter to go back.\n> ");
+        input.nextLine();
+        clearScreen();
+    } 
+        
+    
 
     private boolean checkNoInput(String inputLine) {
         if (inputLine.equals("")) {

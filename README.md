@@ -1,6 +1,6 @@
 # Smart Journaling Project
 
-### Compile and run
+### Build and run
 1. Go to folder `SmartJournalProject/`
 2. Enter in the terminal
     ```bash
@@ -12,12 +12,14 @@
     ```bash
     java -jar SmartJournal.jar
     ```
+    Tips: You may meet `Permission denied: connect` error, try adding `-Djava.net.preferIPv4Stack=true` parameter.
+> You need to provide a vaild `.env` file.
 
 ## 1. Project Mission
 
 To design and develop a "Smart Journaling" application that empowers users to improve emotional awareness and foster personal reflection. By leveraging API-driven data enrichment (weather and sentiment analysis), the project aims to provide a smart, accessible platform that helps users understand emotional patterns and promotes mental well-being, aligning with SDG 3 (Good Health and Well-being).
 
-## 2. Primary Objectives (Core Functionality - Phase 1)
+## 2. ✅Primary Objectives (Core Functionality - Phase 1)
 
 These objectives represent the minimum viable product (MVP) required to deliver the core functionalities as outlined in the project specification.
 
@@ -47,19 +49,19 @@ These objectives represent the minimum viable product (MVP) required to deliver 
 
 - ✅Create a time-sensitive welcome message (Good Morning, Good Afternoon, Good Evening) based on the user's current time (GMT+8).
 
-### API Integration (Automated Enrichment):
+### ✅API Integration (Automated Enrichment):
 
-- Weather API (GET): Successfully integrate the Malaysian weather data API. Automatically fetch and store the summary_forecast for the current date with the journal entry.
+- ✅Weather API (GET): Successfully integrate the Malaysian weather data API. Automatically fetch and store the summary_forecast for the current date with the journal entry.
 
-- Sentiment API (POST): Successfully integrate the Hugging Face (DistilBERT SST-2) model API.
+- ✅Sentiment API (POST): Successfully integrate the Hugging Face (DistilBERT SST-2) model API.
 
-- Implement real-time sentiment analysis on the user's journal text upon creation and editing.
+- ✅Implement real-time sentiment analysis on the user's journal text.
 
-- Develop value-extraction logic to parse the API JSON response and store the label with the highest score (e.g., "POSITIVE" or "NEGATIVE") as the user's "mood".
+- ✅Develop value-extraction logic to parse the API JSON response and store the label with the highest score (e.g., "POSITIVE" or "NEGATIVE") as the user's "mood".
 
-### Data Review:
+### ✅Data Review:
 
-- Develop a "Weekly Summary" page that displays an overview of the user's mood and recorded weather for the past seven days.
+- ✅Develop a "Weekly Summary" page that displays an overview of the user's mood and recorded weather for the past seven days.
 
 ## 3. Secondary Objectives (Enhancements - Phase 2)
 
