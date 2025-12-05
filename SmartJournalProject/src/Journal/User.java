@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class User {
 
-    private String email, password, displayName;
+    private String email, displayName;
     private static final Scanner input = new Scanner(System.in);
     private static final String DATAFILE = "UserData/UserData.txt";
 
@@ -23,9 +23,9 @@ public class User {
             Scanner inputStream = new Scanner(new FileInputStream(DATAFILE));
             ) {
             System.out.print("Enter email: ");
-            email = input.nextLine();
+            this.email = input.nextLine();
 
-            if (!email.contains("@")) {
+            if (!this.email.contains("@")) {
                 clearScreen();
                 System.out.println("Invaild email.");
                 return false;
@@ -33,23 +33,23 @@ public class User {
             // Check if already registered
             while (inputStream.hasNextLine()) {
                 String currentLine = inputStream.nextLine();
-                if (currentLine.equals(email)) {
+                if (currentLine.equals(this.email)) {
                     clearScreen();
                     System.out.println("You have already registered. Please use log in.");
                     return false;
                 }
             }
 
-            outputStream.println(email);
+            outputStream.println(this.email);
             System.out.print("Enter display name: ");
-            displayName = input.nextLine();
-            while (checkNoInput(displayName)) {
+            this.displayName = input.nextLine();
+            while (checkNoInput(this.displayName)) {
                 System.out.print("Enter display name: ");
-                displayName = input.nextLine();
+                this.displayName = input.nextLine();
             }
-            outputStream.println(displayName);
+            outputStream.println(this.displayName);
             System.out.print("Enter password: ");
-            password = input.nextLine();
+            String password = input.nextLine();
             while (checkNoInput(password)) {
                 System.out.print("Enter password: ");
                 password = input.nextLine();
@@ -72,9 +72,9 @@ public class User {
             Scanner inputStream = new Scanner(new FileInputStream(DATAFILE));
         ) {
             System.out.print("Enter email: ");
-            email = input.nextLine();
+            this.email = input.nextLine();
             System.out.print("Enter password: ");
-            password = input.nextLine();
+            String password = input.nextLine();
             String encryptedPasswd = getSHA256(password);
             int lineNumber = 0;
             // Check availablity
@@ -82,9 +82,9 @@ public class User {
                 lineNumber++;
                 String currentLine = inputStream.nextLine();
                 if (lineNumber % 3 == 1) {
-                    if (currentLine.equals(email)) {
+                    if (currentLine.equals(this.email)) {
                         // Get displayName and check password
-                        displayName = inputStream.nextLine();
+                        this.displayName = inputStream.nextLine();
                         if (encryptedPasswd.equals(inputStream.nextLine())) {
                             clearScreen();
                             System.out.println("Login successful!");
@@ -104,11 +104,11 @@ public class User {
     }
 
     public String getDisplayName() {
-        return displayName;
+        return this.displayName;
     }
     
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     private boolean checkNoInput(String inputLine) {

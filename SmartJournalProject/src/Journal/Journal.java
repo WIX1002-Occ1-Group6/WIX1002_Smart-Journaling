@@ -35,10 +35,10 @@ public class Journal {
             // Find all the date line in file
             for (int lineNumber = 0; inputStream.hasNextLine(); ) {
                 lineNumber++;
-                countJournal = lineNumber / 4 + 1;
+                this.countJournal = lineNumber / 4 + 1;
                 String currentLine = inputStream.nextLine();
                 if (lineNumber % 4 == 1) {
-                    System.out.print(countJournal + ". "+ currentLine);
+                    System.out.print(this.countJournal + ". "+ currentLine);
                     dateFind = currentLine;
                     if (dateFind.equals(today.toString())) {
                         System.out.println(" (Today)");
@@ -46,14 +46,14 @@ public class Journal {
                 }
             }
             if (!dateFind.equals(today.toString())) {
-                System.out.println(countJournal + ". (No journal for today, create one!)");
-                isTodayNoJournal = true;
-            } else countJournal--;
+                System.out.println(this.countJournal + ". (No journal for today, create one!)");
+                this.isTodayNoJournal = true;
+            } else this.countJournal--;
         } 
         catch (IOException e) {
             System.out.println("Problem with file!!"); 
         }
-        return countJournal;
+        return this.countJournal;
     }
 
     public void journalPage(int journalDateNum, String email) {
@@ -66,11 +66,11 @@ public class Journal {
                 lineNumber++;
                 String currentLine = inputStream.nextLine();
                 if (lineNumber == dateLine) {
-                    date = currentLine;
+                    this.date = currentLine;
                     break;
                 }
             }
-            if (isTodayNoJournal && journalDateNum == countJournal) {
+            if (this.isTodayNoJournal && journalDateNum == this.countJournal) {
                 System.out.println("\nEnter your journal entry for " + today + ": ");
                 System.out.print("> ");
                 String entryText = input.nextLine();
@@ -90,12 +90,12 @@ public class Journal {
                 outputStream.println(entryText);
                 clearScreen();
                 System.out.println("Journal saved successfully!");
-                isTodayNoJournal = false;
+                this.isTodayNoJournal = false;
                 inputStream.close();
                 outputStream.close();
                 journalPage(journalDateNum, email);
-            } else if (journalDateNum == countJournal) {
-                System.out.println("\n=== Journal Entry for " + date + " ===");
+            } else if (journalDateNum == this.countJournal) {
+                System.out.println("\n=== Journal Entry for " + this.date + " ===");
                 System.out.println("Would you like to:");
                 System.out.println("1. View Journal");
                 System.out.println("2. Edit Journal");
@@ -104,7 +104,7 @@ public class Journal {
                 String journalEditChoice = input.nextLine();
                 switch (journalEditChoice) {
                     case "1":
-                        System.out.println("\n=== Journal Entry for " + date + " ===");
+                        System.out.println("\n=== Journal Entry for " + this.date + " ===");
                         System.out.println("Weather: " + inputStream.nextLine());
                         System.out.println("Mood: " + inputStream.nextLine());
                         System.out.println(inputStream.nextLine());
@@ -113,7 +113,7 @@ public class Journal {
                         clearScreen();
                         break;
                     case "2":
-                        System.out.println("\nEdit your journal entry for " + date + ":");
+                        System.out.println("\nEdit your journal entry for " + this.date + ":");
                         System.out.print("> ");
                         editJournal(email);
                         break;
@@ -127,7 +127,7 @@ public class Journal {
                         break;
                 }
             } else {
-                System.out.println("\n=== Journal Entry for " + date + " ===");
+                System.out.println("\n=== Journal Entry for " + this.date + " ===");
                 System.out.println("Weather: " + inputStream.nextLine());
                 System.out.println("Mood: " + inputStream.nextLine());
                 System.out.println(inputStream.nextLine());
@@ -157,7 +157,7 @@ public class Journal {
             }
             String editInput = input.nextLine();
             while (checkNoInput(editInput)) {
-                System.out.println("\nEdit your journal entry for " + date + ":");
+                System.out.println("\nEdit your journal entry for " + this.date + ":");
                 System.out.print("> ");
                 editInput = input.nextLine();
             }
