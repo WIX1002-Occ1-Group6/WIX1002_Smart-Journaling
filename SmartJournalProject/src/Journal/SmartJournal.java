@@ -87,7 +87,7 @@ public class SmartJournal {
         }
         if (journalDateNum > 0) {
             clearScreen();
-            journal.journalPage(journalDateNum,user.getEmail());
+            journal.journalPage(journalDateNum);
             journalDatePage();
         }
 

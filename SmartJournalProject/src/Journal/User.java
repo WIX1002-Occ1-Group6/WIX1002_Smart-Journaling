@@ -1,13 +1,17 @@
 package Journal;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class User {
@@ -18,10 +22,7 @@ public class User {
 
     public boolean register() {
         
-        try (
-            PrintWriter outputStream = new PrintWriter(new FileOutputStream(DATAFILE,true));
-            Scanner inputStream = new Scanner(new FileInputStream(DATAFILE));
-            ) {
+        try (PrintWriter outputStream = new PrintWriter(new FileOutputStream(DATAFILE,true));) {
             System.out.print("Enter email: ");
             this.email = input.nextLine();
 
@@ -30,24 +31,22 @@ public class User {
                 System.out.println("Invaild email.");
                 return false;
             }
-            // Check if already registered
-            while (inputStream.hasNextLine()) {
-                String currentLine = inputStream.nextLine();
-                if (currentLine.equals(this.email)) {
-                    clearScreen();
-                    System.out.println("You have already registered. Please use log in.");
-                    return false;
-                }
+
+            Map<String, List<String>> loginMap = new HashMap<>();
+            readData(loginMap);
+            List<String> emailList = new ArrayList<>(loginMap.keySet());
+            if (emailList.contains(this.email)) {
+                clearScreen();
+                System.out.println("You have already registered. Please use log in.");
+                return false;
             }
 
-            outputStream.println(this.email);
             System.out.print("Enter display name: ");
             this.displayName = input.nextLine();
             while (checkNoInput(this.displayName)) {
                 System.out.print("Enter display name: ");
                 this.displayName = input.nextLine();
             }
-            outputStream.println(this.displayName);
             System.out.print("Enter password: ");
             String password = input.nextLine();
             while (checkNoInput(password)) {
@@ -55,6 +54,9 @@ public class User {
                 password = input.nextLine();
             }
             String encryptedPasswd = getSHA256(password);
+            outputStream.println("\n===\n===\n");
+            outputStream.println(this.email);
+            outputStream.println(this.displayName);
             outputStream.println(encryptedPasswd);
         } 
         catch (IOException e) {
@@ -67,37 +69,24 @@ public class User {
     }
 
     public boolean login() {
-        try (
-            PrintWriter outputStream = new PrintWriter(new FileOutputStream(DATAFILE,true));
-            Scanner inputStream = new Scanner(new FileInputStream(DATAFILE));
-        ) {
-            System.out.print("Enter email: ");
-            this.email = input.nextLine();
-            System.out.print("Enter password: ");
-            String password = input.nextLine();
-            String encryptedPasswd = getSHA256(password);
-            int lineNumber = 0;
-            // Check availablity
-            while (inputStream.hasNextLine()) {
-                lineNumber++;
-                String currentLine = inputStream.nextLine();
-                if (lineNumber % 3 == 1) {
-                    if (currentLine.equals(this.email)) {
-                        // Get displayName and check password
-                        this.displayName = inputStream.nextLine();
-                        if (encryptedPasswd.equals(inputStream.nextLine())) {
-                            clearScreen();
-                            System.out.println("Login successful!");
-                            return true;
-                        }
-                    }
-                }
+        System.out.print("Enter email: ");
+        this.email = input.nextLine();
+        System.out.print("Enter password: ");
+        String password = input.nextLine();
+        String encryptedPasswd = getSHA256(password);
+
+        Map<String, List<String>> loginMap = new HashMap<>();
+        readData(loginMap);
+        List<String> emailList = new ArrayList<>(loginMap.keySet());
+        if (emailList.contains(this.email)) {
+            List<String> privacyList = loginMap.get(this.email);
+            this.displayName = privacyList.get(0);
+            if (privacyList.get(1).equals(encryptedPasswd)) {
+                clearScreen();
+                System.out.println("Login successful!");
+                return true;
             }
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("File was not found");
-            return false;
-        }
+        }   
         clearScreen();
         System.out.println("Email or password incorrect!");
         return false;
@@ -136,6 +125,28 @@ public class User {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return input;
+        }
+    }
+
+    private void readData(Map<String, List<String>> map) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(DATAFILE)));
+            content = content.replace("\r\n", "\n"); // Unify Windows(\r\n) Linux(\n) difference
+            String[] blocks = content.split("\n===\n===\n");
+            for (String block : blocks) {
+                block = block.trim(); // Discard space
+                if (block.isEmpty()) continue;
+                String[] lines = block.split("\n");
+                if (lines.length >= 3) {
+                    String emailKey = lines[0].trim();
+                    List<String> privacyKey = new ArrayList<>();
+                    privacyKey.add(lines[1].trim());
+                    privacyKey.add(lines[2].trim());
+                    map.put(emailKey, privacyKey);   
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
     }
 

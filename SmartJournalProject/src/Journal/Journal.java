@@ -5,9 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -22,68 +28,52 @@ public class Journal {
     private String date = "";
     private int countJournal = 1;
     private boolean isTodayNoJournal = false;
+    private String journalFile = "UserData/null_journal.txt";
 
     public int datePage(String email) {
-        try (
-            PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData/" + email + "_journal.txt",true));
-            Scanner inputStream = new Scanner(new FileInputStream("UserData/" + email + "_journal.txt"));
-            ) {
-            outputStream.close();
-            System.out.println("\n=== Journal Dates ===");
-            System.out.println("0. Return to Main Menu");
-            String dateFind = "";
-            // Find all the date line in file
-            for (int lineNumber = 0; inputStream.hasNextLine(); ) {
-                lineNumber++;
-                this.countJournal = lineNumber / 4 + 1;
-                String currentLine = inputStream.nextLine();
-                if (lineNumber % 4 == 1) {
-                    System.out.print(this.countJournal + ". "+ currentLine);
-                    dateFind = currentLine;
-                    if (dateFind.equals(today.toString())) {
-                        System.out.println(" (Today)");
-                    } else System.out.println();
-                }
-            }
-            if (!dateFind.equals(today.toString())) {
-                System.out.println(this.countJournal + ". (No journal for today, create one!)");
-                this.isTodayNoJournal = true;
-            } else this.countJournal--;
-        } 
-        catch (IOException e) {
-            System.out.println("Problem with file!!"); 
+        this.journalFile = "UserData/" + email + "_journal.txt";
+        Map<String, List<String>> journalMap = new HashMap<>();
+        readData(journalMap);
+        List<String> dateList = new ArrayList<>(journalMap.keySet());
+        Collections.sort(dateList);
+        this.countJournal = dateList.size() + 1;
+        System.out.println("\n=== Journal Dates ===");
+        System.out.println("0. Return to Main Menu");
+        for (int i = 0; i < dateList.size(); i++) {
+            String date = dateList.get(i);
+            System.out.print(i + 1 + ". " + date);
+            if (date.equals(today.toString())) {
+                System.out.println(" (Today)");
+            } else System.out.println();
         }
+        if (!dateList.contains(today.toString())) {
+            System.out.println(this.countJournal + ". (No journal for today, create one!)");
+            this.isTodayNoJournal = true;
+        } else this.countJournal--;
         return this.countJournal;
     }
 
-    public void journalPage(int journalDateNum, String email) {
-        int dateLine = journalDateNum * 4 - 3;
-        try (
-            Scanner inputStream = new Scanner(new FileInputStream("UserData/" + email + "_journal.txt"));
-            PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData/" + email + "_journal.txt",true));
-            ) {
-            for (int lineNumber = 0; inputStream.hasNextLine(); ) {
-                lineNumber++;
-                String currentLine = inputStream.nextLine();
-                if (lineNumber == dateLine) {
-                    this.date = currentLine;
-                    break;
-                }
-            }
+    public void journalPage(int journalDateNum) {
+        Map<String, List<String>> journalMap = new HashMap<>();
+        readData(journalMap);
+        List<String> dateList = new ArrayList<>(journalMap.keySet());
+        Collections.sort(dateList);
+        if (journalDateNum <= journalMap.size()) this.date = dateList.get(journalDateNum - 1);
+
+        try (PrintWriter outputStream = new PrintWriter(new FileOutputStream(this.journalFile,true));) {
             if (this.isTodayNoJournal && journalDateNum == this.countJournal) {
-                System.out.println("\nEnter your journal entry for " + today + ": ");
-                System.out.print("> ");
-                String entryText = input.nextLine();
-                while (checkNoInput(entryText)) {
+                String entryText = "";
+                do {
                     System.out.println("\nEnter your journal entry for " + today + ": ");
                     System.out.print("> ");
                     entryText = input.nextLine();
-                }
+                } while (checkNoInput(entryText));
                 System.out.println("Processing...");
                 String json = getMood(entryText);
                 String mood = parser(json, "\"label\":");
                 String weather = weatherInEng(parser(json, "\"summary_forecast\":"));
 
+                outputStream.println("\n===\n===\n");
                 outputStream.println(today);
                 outputStream.println(weather);
                 outputStream.println(mood);
@@ -91,9 +81,8 @@ public class Journal {
                 clearScreen();
                 System.out.println("Journal saved successfully!");
                 this.isTodayNoJournal = false;
-                inputStream.close();
                 outputStream.close();
-                journalPage(journalDateNum, email);
+                journalPage(journalDateNum);
             } else if (journalDateNum == this.countJournal) {
                 System.out.println("\n=== Journal Entry for " + this.date + " ===");
                 System.out.println("Would you like to:");
@@ -101,21 +90,21 @@ public class Journal {
                 System.out.println("2. Edit Journal");
                 System.out.println("3. Back to Dates");
                 System.out.print("\n> ");
+
+                List<String> journalList = journalMap.get(this.date);
                 String journalEditChoice = input.nextLine();
                 switch (journalEditChoice) {
                     case "1":
                         System.out.println("\n=== Journal Entry for " + this.date + " ===");
-                        System.out.println("Weather: " + inputStream.nextLine());
-                        System.out.println("Mood: " + inputStream.nextLine());
-                        System.out.println(inputStream.nextLine());
+                        System.out.println("Weather: " + journalList.get(0));
+                        System.out.println("Mood: " + journalList.get(1));
+                        System.out.println(journalList.get(2));
                         System.out.print("\nPress Enter to go back.\n> ");
                         input.nextLine();
                         clearScreen();
                         break;
                     case "2":
-                        System.out.println("\nEdit your journal entry for " + this.date + ":");
-                        System.out.print("> ");
-                        editJournal(email);
+                        editJournal();
                         break;
                     case "3":
                         clearScreen();
@@ -123,14 +112,15 @@ public class Journal {
                     default:
                         clearScreen();
                         System.out.println("\nInvaild input.");
-                        journalPage(journalDateNum, email);
+                        journalPage(journalDateNum);
                         break;
                 }
             } else {
+                List<String> journalList = journalMap.get(this.date);
                 System.out.println("\n=== Journal Entry for " + this.date + " ===");
-                System.out.println("Weather: " + inputStream.nextLine());
-                System.out.println("Mood: " + inputStream.nextLine());
-                System.out.println(inputStream.nextLine());
+                System.out.println("Weather: " + journalList.get(0));
+                System.out.println("Mood: " + journalList.get(1));
+                System.out.println(journalList.get(2));
                 System.out.print("\nPress Enter to go back.\n> ");
                 input.nextLine();
                 clearScreen();
@@ -141,9 +131,9 @@ public class Journal {
         } 
     }
 
-    public void editJournal(String email) {
+    public void editJournal() {
         // Read & write n-1 line to temp file, then add 1 new line in temp, then rewrite temp file into original file 
-        File originalFile = new File("UserData/" + email + "_journal.txt");
+        File originalFile = new File(this.journalFile);
         File tempFile = new File("UserData/temp.txt");
         try (
             Scanner inputStream = new Scanner(new FileInputStream(originalFile));
@@ -155,12 +145,12 @@ public class Journal {
                 outputStream.println(lineBuffer);
                 lineBuffer = line;
             }
-            String editInput = input.nextLine();
-            while (checkNoInput(editInput)) {
+            String editInput = "";
+            do {
                 System.out.println("\nEdit your journal entry for " + this.date + ":");
                 System.out.print("> ");
                 editInput = input.nextLine();
-            }
+            } while (checkNoInput(editInput));
             outputStream.print(editInput);
         } catch (Exception e) {
             System.out.println("Problem with file!!");
@@ -181,37 +171,29 @@ public class Journal {
 
     public void weeklySummary(String email) {
         System.out.println("=== Weekly Mood Summary ===");
-        String format = "%-12s %-55s %-10s%n";
+        String format = "%-12s %-45s %-10s%n";
         System.out.printf(format, "Date", "Weather", "Mood");
-        
+
+        this.journalFile = "UserData/" + email + "_journal.txt";
+        Map<String, List<String>> journalMap = new HashMap<>();
+        readData(journalMap);
+        List<String> dateList = new ArrayList<>(journalMap.keySet());
+
         int count = 0;
         for (int i = 6; i >= 0; i--) {
             LocalDate dateToCheck = today.minusDays(i);
             String dateString = dateToCheck.toString();
-            try (
-                PrintWriter outputStream = new PrintWriter(new FileOutputStream("UserData/" + email + "_journal.txt",true));
-                Scanner inputStream = new Scanner(new FileInputStream("UserData/" + email + "_journal.txt"));
-                ) {
-                outputStream.close();
-                while (inputStream.hasNextLine()) {
-                    String currentLine = inputStream.nextLine();
-                    if(dateString.equals(currentLine)) {
-                        System.out.printf(format, currentLine, inputStream.nextLine(), inputStream.nextLine());
-                        count++;
-                        break;
-                    }
-                }
-            } catch (IOException e) {
-            System.out.println("Problem with file!!"); 
+            if (dateList.contains(dateString)) {
+                List<String> journalList = journalMap.get(dateString);
+                System.out.printf(format, dateString, journalList.get(0), journalList.get(1));
+                count++;
             }
         }
         System.out.println("\nIn last 7 days, you wrote " + count + " journal entry.");
         System.out.print("\nPress Enter to go back.\n> ");
         input.nextLine();
         clearScreen();
-    } 
-        
-    
+    }
 
     private boolean checkNoInput(String inputLine) {
         if (inputLine.equals("")) {
@@ -274,6 +256,29 @@ public class Journal {
             }
         }
         return summaryForecast;
+    }
+
+    private void readData(Map<String, List<String>> map) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(journalFile)));
+            content = content.replace("\r\n", "\n"); // Unify Windows(\r\n) Linux(\n) difference
+            String[] blocks = content.split("\n===\n===\n");
+            for (String block : blocks) {
+                block = block.trim(); // Discard space
+                if (block.isEmpty()) continue;
+                String[] lines = block.split("\n");
+                if (lines.length >= 4) {
+                    String dateKey = lines[0].trim();
+                    List<String> journalKey = new ArrayList<>();
+                    journalKey.add(lines[1].trim());
+                    journalKey.add(lines[2].trim());
+                    journalKey.add(lines[3].trim());
+                    map.put(dateKey, journalKey);   
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static String weatherInEng(String malay) {
