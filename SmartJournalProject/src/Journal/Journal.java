@@ -104,8 +104,6 @@ public class Journal {
                         clearScreen();
                         break;
                     case "2":
-                        System.out.println("\nEdit your journal entry for " + this.date + ":");
-                        System.out.print("> ");
                         editJournal();
                         break;
                     case "3":
@@ -147,12 +145,12 @@ public class Journal {
                 outputStream.println(lineBuffer);
                 lineBuffer = line;
             }
-            String editInput = input.nextLine();
-            while (checkNoInput(editInput)) {
+            String editInput = "";
+            do {
                 System.out.println("\nEdit your journal entry for " + this.date + ":");
                 System.out.print("> ");
                 editInput = input.nextLine();
-            }
+            } while (checkNoInput(editInput));
             outputStream.print(editInput);
         } catch (Exception e) {
             System.out.println("Problem with file!!");
